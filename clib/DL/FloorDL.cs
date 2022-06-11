@@ -14,9 +14,9 @@ namespace clib.DL
 
         public List<Floor> Floors { get => floors; set => floors = value; }
 
-        public void add_list(int h,int w,PictureBox a)
+        public void add_list(int a,int b,int top,int left,PictureBox v)
         {
-            Floor k = new Floor(w, 60,h,w,a);
+            Floor k = new Floor(a, b,top,left,v);
             Floors.Add(k);
             onAdd?.Invoke(k.Pb, EventArgs.Empty);
         }

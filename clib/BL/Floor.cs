@@ -19,8 +19,8 @@ namespace clib.BL
             pb.Parent = j;
             pb.Size = new Size(a, b);
             pb.SizeMode = PictureBoxSizeMode.StretchImage;
-            pb.Top = top-40;
-            pb.Left = 0;
+            pb.Top = top;
+            pb.Left = left;
         }
     }
 }

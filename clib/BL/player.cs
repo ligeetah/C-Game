@@ -28,24 +28,57 @@ namespace clib.BL
             pb = new PictureBox();
             is_standing();
             pb.BackColor = Color.Transparent;
-            pb.Size = new Size(120, 150);
+            pb.Size = new Size(100, 100);
             pb.Left = left / 2;
-            pb.Top = top - pb.Height-20;
+            pb.Top = top - pb.Height - 60;
             pb.SizeMode = PictureBoxSizeMode.StretchImage;
             walking_speed = s;
             jump_steps = jumpsteps;
             G = g;
         }
-        public void moveright()
+        public void moveright(int height, int width, List<Floor> list)
         {
-            direction = true;
-            pb.Left += walking_speed;
-            r_count++;
-            if (r_count == 7)
+            if (check_borders(height, width) && check_hurdles_right(list))
             {
-                r_count = 1;
+                direction = true;
+                pb.Left += walking_speed;
+                r_count++;
+                if (r_count == 7)
+                {
+                    r_count = 1;
+                }
+                updatepic_right();
             }
-            updatepic_right();
+        }
+        public bool check_borders(int h, int w)
+        {
+            if (pb.Right < w && pb.Top < h)
+            {
+                return true;
+            }
+            return false;
+        }
+        public bool check_hurdles_left(List<Floor> list)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i].Pb.Bounds.IntersectsWith(pb.Bounds) && pb.Top< list[i].Pb.Top+pb.Height && pb.Bottom > list[i].Pb.Bottom)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        public bool check_hurdles_right(List<Floor> list)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i].Pb.Bounds.IntersectsWith(pb.Bounds) && pb.Top < list[i].Pb.Top + pb.Height && pb.Bottom > list[i].Pb.Bottom )
+                {
+                    return false;
+                }
+            }
+            return true;
         }
         public void updatepic_right()
         {
@@ -74,16 +107,19 @@ namespace clib.BL
                 pb.Image = clib.Properties.Resource1._6;
             }
         }
-        public void moveleft()
+        public void moveleft(List<Floor> list)
         {
-            direction = false;
-            pb.Left -= walking_speed;
-            l_count++;
-            if (l_count == 7)
+            if (check_hurdles_left(list))
             {
-                l_count = 1;
+                direction = false;
+                pb.Left -= walking_speed;
+                l_count++;
+                if (l_count == 7)
+                {
+                    l_count = 1;
+                }
+                updatepic_left();
             }
-            updatepic_left();
         }
         public void updatepic_left()
         {
@@ -183,7 +219,7 @@ namespace clib.BL
         }
         public void gravity(List<Floor> list)
         {
-            if(!check_under(list))
+            if (!check_under(list))
             {
                 pb.Top += G;
             }
@@ -192,9 +228,31 @@ namespace clib.BL
         {
             for (int i = 0; i < list.Count; i++)
             {
-                if (list[i].Pb.Bounds.IntersectsWith(pb.Bounds) && pb.Bottom > list[i].Pb.Top)
+                if (list[i].Pb.Bounds.IntersectsWith(pb.Bounds) && !location(pb, list[i].Pb))
                 {
                     return true;
+                }
+            }
+            return false;
+        }
+        public bool location(PictureBox obj,PictureBox surface)
+        {
+            //pb.Bottom > list[i].Pb.Top && ((pb.Left < list[i].Pb.Left && pb.Left > list[i].Pb.Right) || pb.Right > list[i].Pb.Left && pb.Right < list[i].Pb.Right)
+            if(obj.Bottom>surface.Top)
+            {
+                if(direction)
+                {
+                    if(obj.Right<surface.Left+25)
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (obj.Left+25 > surface.Right)
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
