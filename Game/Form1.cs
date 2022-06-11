@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Resources;
 using clib.game;
 using clib.BL;
+using clib.DL;
 using EZInput;
 
 namespace Game
@@ -17,6 +18,7 @@ namespace Game
     public partial class Form1 : Form
     {
         gameobjectDL objects = new gameobjectDL();
+        FloorDL floors = new FloorDL();
         player P;
         bool key_pressed = false;
         bool jump = false;
@@ -27,15 +29,17 @@ namespace Game
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            objects.onAdd += new EventHandler(OnAdd11);
-            objects.add_list(Properties.Resources.ufoGreen, "up", 30, 30);
-            P = new player(this.Height, this.Width,20);
+            objects.onAdd += new EventHandler(OnAdd);
+            floors.onAdd += new EventHandler(OnAdd);
+            P = new player(this.Height, this.Width, 20, 15, 20);
+            floors.add_list(this.Height,this.Width,P.Pd);
+            objects.add_list(Properties.Resources.ufoGreen, "up", P.Pd.Top, 60);
             this.Controls.Add(P.Pd);
+
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            //objects.gravity();
             key_pressed = false;
             if(Keyboard.IsKeyPressed(Key.RightArrow))
             {
@@ -47,32 +51,34 @@ namespace Game
                 P.moveleft();
                 key_pressed = true;
             }
-            if(Keyboard.IsKeyPressed(Key.Space))
+            if(P.check_under(floors.Floors))
             {
-                jump = true;
-                key_pressed = true;
+                if (Keyboard.IsKeyPressed(Key.Space))
+                {
+                    jump = true;
+                    key_pressed = true;
+                }
             }
             if(jump)
             {
-                p
+                jump = P.Jump();
+                key_pressed = true;
             }
             if(!key_pressed)
             {
                 P.is_standing();
             }
-
-
-
-
-
-
-            if(Keyboard.IsKeyPressed(Key.Escape))
+            if(!jump)
+            {
+                P.gravity(floors.Floors);
+            }
+            if (Keyboard.IsKeyPressed(Key.Escape))
             {
                 this.Close();
             }
         }
 
-        public void OnAdd11(object sender, EventArgs e)
+        public void OnAdd(object sender, EventArgs e)
         {
             this.Controls.Add(sender as PictureBox);
         }

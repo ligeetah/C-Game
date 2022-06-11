@@ -11,7 +11,6 @@ namespace clib.game
     {
         private PictureBox pb;
         private string movement;
-        private int pic_change=0;
 
         public PictureBox Pb { get { return pb; } set { pb = value; } }
         public string Movement { get { return movement; } set { movement = value; } }

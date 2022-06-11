@@ -17,22 +17,24 @@ namespace clib.BL
         private int l_count = 0;
         private int jump_count = 0;
         private int walking_speed;
+        private int jump_steps;
+        private int G;
         private bool direction = false;
         public EventHandler onAdd;
         public int R_count { get { return r_count; } set { r_count = value; } }
         public PictureBox Pd { get { return pb; } set { pb = value; } }
-        public player(int top, int left, int s)
+        public player(int top, int left, int s, int jumpsteps, int g)
         {
             pb = new PictureBox();
             is_standing();
             pb.BackColor = Color.Transparent;
             pb.Size = new Size(120, 150);
             pb.Left = left / 2;
-            pb.Top = top - pb.Height;
+            pb.Top = top - pb.Height-20;
             pb.SizeMode = PictureBoxSizeMode.StretchImage;
             walking_speed = s;
-            onAdd?.Invoke(pb, EventArgs.Empty);
-
+            jump_steps = jumpsteps;
+            G = g;
         }
         public void moveright()
         {
@@ -121,10 +123,14 @@ namespace clib.BL
                 pb.Image = clib.Properties.Resource1.LS;
             }
         }
-        public void jump()
+        public bool Jump()
         {
             jump_count++;
-            if(direction)
+            if (jump_count == 6)
+            {
+                jump_count = 0;
+            }
+            if (direction)
             {
                 if (jump_count == 1)
                 {
@@ -145,8 +151,53 @@ namespace clib.BL
                 else if (jump_count == 5)
                 {
                     pb.Image = clib.Properties.Resource1.j5r;
+                    return false;
                 }
             }
+            else
+            {
+                if (jump_count == 1)
+                {
+                    pb.Image = clib.Properties.Resource1.j1l;
+                }
+                else if (jump_count == 2)
+                {
+                    pb.Image = clib.Properties.Resource1.j2l;
+                }
+                else if (jump_count == 3)
+                {
+                    pb.Image = clib.Properties.Resource1.j3l;
+                }
+                else if (jump_count == 4)
+                {
+                    pb.Image = clib.Properties.Resource1.j4l;
+                }
+                else if (jump_count == 5)
+                {
+                    pb.Image = clib.Properties.Resource1.j5l;
+                    return false;
+                }
+            }
+            pb.Top -= jump_steps;
+            return true;
+        }
+        public void gravity(List<Floor> list)
+        {
+            if(!check_under(list))
+            {
+                pb.Top += G;
+            }
+        }
+        public bool check_under(List<Floor> list)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i].Pb.Bounds.IntersectsWith(pb.Bounds) && pb.Bottom > list[i].Pb.Top)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

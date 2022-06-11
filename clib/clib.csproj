@@ -42,8 +42,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BL\Floor.cs" />
     <Compile Include="BL\player.cs" />
     <Compile Include="BL\gameobject.cs" />
+    <Compile Include="DL\FloorDL.cs" />
     <Compile Include="DL\gameobjectDL.cs" />
     <Compile Include="Properties\Resource1.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -142,6 +144,27 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\j5r.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\j2l.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\j3l.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\j4l.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\j5l.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\j1l.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Asset 7.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Floor.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
