@@ -18,7 +18,8 @@ namespace Game
     {
         gameobjectDL objects = new gameobjectDL();
         FloorDL floors = new FloorDL();
-        player P;
+        EnemyDL enemies = new EnemyDL();
+        Player P;
         bool key_pressed = false;
         bool jump = false;
         public Form1()
@@ -30,19 +31,21 @@ namespace Game
         {
             objects.onAdd += new EventHandler(OnAdd);
             floors.onAdd += new EventHandler(OnAdd);
-            P = new player(this.Height, this.Width, 20, 30, 20);
+            enemies.onAdd+=new EventHandler(OnAdd);
+            P = new Player(this.Height, this.Width, 15, 30, 20);
             P.onAdd+=new EventHandler(OnAdd);
+            P.onDelete += new EventHandler(Onremove);
             floors.add_list(this.Width,30,this.Height-20,0,P.Pd);
-            floors.add_list(700, 30, this.Height-100, 0, P.Pd);
-            floors.add_list(100, 30, this.Height - 330, 0, P.Pd);
-            floors.add_list(150, 30, this.Height - 500, 0, P.Pd);
-            floors.add_list(700, 30, this.Height - 350, 900, P.Pd);
+            /*floors.add_list(700, 30, this.Height-100, 0, P.Pd);
+            floors.add_list(100, 30, this.Height - 250, 0, P.Pd);
+            floors.add_list(150, 30, this.Height - 400, 300, P.Pd);
+            floors.add_list(700, 30, this.Height - 300, 900, P.Pd);
             floors.add_list(700, 30, this.Height - 100, 900, P.Pd);
             floors.add_list(700, 30, this.Height - 150, 900, P.Pd);
-
-            //objects.add_list(Properties.Resources.ufoGreen, "up", P.Pd.Top, 60);
+            enemies.add_list(this.Height - 500, 500, 20, 20);
+            enemies.add_list(this.Height - 500, 200, 10, 20);
+            enemies.add_list(this.Height - 500, this.Width - 200, 15, 20);*/
             this.Controls.Add(P.Pd);
-
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -87,16 +90,23 @@ namespace Game
             {
                 this.Close();
             }
-
-
-
-
-            P.movefires(floors.Floors);
+            enemies.move(this.Width,floors.Floors);
+            P.movefires(this.Width);
+            enemies.gravity(floors.Floors);
         }
 
         public void OnAdd(object sender, EventArgs e)
         {
             this.Controls.Add(sender as PictureBox);
+        }
+        public void Onremove(object sender, EventArgs e)
+        {
+            this.Controls.Remove(sender as PictureBox);
+        }
+
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+            
         }
     }
 }

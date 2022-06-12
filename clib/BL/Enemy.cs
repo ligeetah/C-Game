@@ -10,31 +10,30 @@ using System.Windows.Forms;
 using System.Resources;
 namespace clib.BL
 {
-    public class Player : Character
+    public class Enemy:Character
     {
-        private int jump_count = 0;
-        private int jump_steps;
-        public int R_count { get { return r_count; } set { r_count = value; } }
-        public PictureBox Pd { get { return pb; } set { pb = value; } }
-        public Player(int top, int left, int s, int jumpsteps, int g)
+        public Enemy(int top, int left, int s, int g)
         {
             pb = new PictureBox();
             is_standing();
             pb.BackColor = Color.Transparent;
             pb.Size = new Size(100, 100);
-            pb.Left = left / 2;
-            pb.Top = top - pb.Height - 60;
+            pb.Left = left;
+            pb.Top = top;
             pb.SizeMode = PictureBoxSizeMode.StretchImage;
             walking_speed = s;
-            jump_steps = jumpsteps;
             G = g;
             fires = new List<PictureBox>();
         }
         public void moveleft(List<Floor> list)
         {
-            if (check_borders_left(pb) && check_hurdles_left(list))
+            bool a = check_borders_left(pb);
+            if(!a)
             {
-                direction = false;
+                direction = true;
+            }
+            if ( a&& check_hurdles_left(list) && check_hurdles_left_down(list))
+            {
                 pb.Left -= walking_speed;
                 l_count++;
                 if (l_count == 7)
@@ -46,9 +45,13 @@ namespace clib.BL
         }
         public void moveright(int width, List<Floor> list)
         {
-            if (check_borders_right(pb, width) && check_hurdles_right(list))
+            bool a = check_borders_right(pb, width);
+            if(!a)
             {
-                direction = true;
+                direction = false;
+            }
+            else if (a&& check_hurdles_right(list) && check_hurdles_right_down(list))
+            {
                 pb.Left += walking_speed;
                 r_count++;
                 if (r_count == 7)
@@ -58,6 +61,21 @@ namespace clib.BL
                 updatepic_right();
             }
         }
+        public bool check_hurdles_right_down(List<Floor> list)
+        {
+            gameobject g = new gameobject(pb.Bottom, pb.Left+100, 50, 50);
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i].Pb.Bounds.IntersectsWith(g.Pb.Bounds))
+                {
+                    return true;
+                }
+            }
+            direction = false;
+            return false;
+
+        }
+
         public void updatepic_right()
         {
             if (r_count == 1)
@@ -123,86 +141,31 @@ namespace clib.BL
                 pb.Image = clib.Properties.Resource1.LS;
             }
         }
-        public bool Jump(List<Floor> list)
+        public bool check_hurdles_left_down(List<Floor> list)
         {
-            jump_count++;
-            if (jump_count == 6)
+            gameobject g = new gameobject(pb.Bottom, pb.Left -100, 100, 100);
+
+            for (int i = 0; i < list.Count; i++)
             {
-                jump_count = 0;
+                if (list[i].Pb.Bounds.IntersectsWith(g.Pb.Bounds))
+                {
+                    return true;
+                }
             }
-            if (direction)
+            direction = true;
+            return false;
+        }
+        public void move(int w,List<Floor> list)
+        {
+            if(direction)
             {
-                if (jump_count == 1)
-                {
-                    pb.Image = clib.Properties.Resource1.j1r;
-                }
-                else if (jump_count == 2)
-                {
-                    pb.Image = clib.Properties.Resource1.j2r;
-                }
-                else if (jump_count == 3)
-                {
-                    pb.Image = clib.Properties.Resource1.j3r;
-                }
-                else if (jump_count == 4)
-                {
-                    pb.Image = clib.Properties.Resource1.j4r;
-                }
-                else if (jump_count == 5)
-                {
-                    pb.Image = clib.Properties.Resource1.j5r;
-                    return false;
-                }
+                moveright(w,list);
             }
             else
             {
-                if (jump_count == 1)
-                {
-                    pb.Image = clib.Properties.Resource1.j1l;
-                }
-                else if (jump_count == 2)
-                {
-                    pb.Image = clib.Properties.Resource1.j2l;
-                }
-                else if (jump_count == 3)
-                {
-                    pb.Image = clib.Properties.Resource1.j3l;
-                }
-                else if (jump_count == 4)
-                {
-                    pb.Image = clib.Properties.Resource1.j4l;
-                }
-                else if (jump_count == 5)
-                {
-                    pb.Image = clib.Properties.Resource1.j5l;
-                    return false;
-                }
+                //moveright(w, list);
+                moveleft(list);
             }
-            if (jump_check(list))
-            {
-                pb.Top -= jump_steps;
-            }
-            return true;
-        }
-        public bool jump_check(List<Floor> list)
-        {
-            gameobject a = new gameobject(pb.Top - 50, pb.Left, 30, 100);
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (chk(a.Pb, list[i].Pb))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-        public bool chk(PictureBox obj, PictureBox surface)
-        {
-            if (obj.Bounds.IntersectsWith(surface.Bounds))
-            {
-                return true;
-            }
-            return false;
         }
     }
 }

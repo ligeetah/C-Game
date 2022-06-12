@@ -42,9 +42,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BL\Character.cs" />
+    <Compile Include="BL\Enemy.cs" />
     <Compile Include="BL\Floor.cs" />
     <Compile Include="BL\player.cs" />
     <Compile Include="BL\gameobject.cs" />
+    <Compile Include="DL\EnemyDL.cs" />
     <Compile Include="DL\FloorDL.cs" />
     <Compile Include="DL\gameobjectDL.cs" />
     <Compile Include="Properties\Resource1.Designer.cs">
