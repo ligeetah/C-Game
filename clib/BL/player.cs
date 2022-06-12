@@ -21,6 +21,7 @@ namespace clib.BL
         private int G;
         private bool direction = false;
         public EventHandler onAdd;
+        public List<PictureBox> fires;
         public int R_count { get { return r_count; } set { r_count = value; } }
         public PictureBox Pd { get { return pb; } set { pb = value; } }
         public player(int top, int left, int s, int jumpsteps, int g)
@@ -35,10 +36,11 @@ namespace clib.BL
             walking_speed = s;
             jump_steps = jumpsteps;
             G = g;
+            fires = new List<PictureBox>();
         }
-        public void moveright(int height, int width, List<Floor> list)
+        public void moveright(int width, List<Floor> list)
         {
-            if (check_borders(height, width) && check_hurdles_right(list))
+            if (check_borders_right(width) && check_hurdles_right(list))
             {
                 direction = true;
                 pb.Left += walking_speed;
@@ -50,9 +52,17 @@ namespace clib.BL
                 updatepic_right();
             }
         }
-        public bool check_borders(int h, int w)
+        public bool check_borders_right(int w)
         {
-            if (pb.Right < w && pb.Top < h)
+            if (pb.Right < w)
+            {
+                return true;
+            }
+            return false;
+        }
+        public bool check_borders_left()
+        {
+            if (pb.Left > 0)
             {
                 return true;
             }
@@ -60,9 +70,11 @@ namespace clib.BL
         }
         public bool check_hurdles_left(List<Floor> list)
         {
+            gameobject g = new gameobject(pb.Top, pb.Left - walking_speed, 80, 10);
+
             for (int i = 0; i < list.Count; i++)
             {
-                if (list[i].Pb.Bounds.IntersectsWith(pb.Bounds) && pb.Top< list[i].Pb.Top+pb.Height && pb.Bottom > list[i].Pb.Bottom)
+                if (list[i].Pb.Bounds.IntersectsWith(g.Pb.Bounds))
                 {
                     return false;
                 }
@@ -71,14 +83,16 @@ namespace clib.BL
         }
         public bool check_hurdles_right(List<Floor> list)
         {
+            gameobject g = new gameobject(pb.Top, pb.Right + walking_speed, 80, 10);
             for (int i = 0; i < list.Count; i++)
             {
-                if (list[i].Pb.Bounds.IntersectsWith(pb.Bounds) && pb.Top < list[i].Pb.Top + pb.Height && pb.Bottom > list[i].Pb.Bottom )
+                if (list[i].Pb.Bounds.IntersectsWith(g.Pb.Bounds))
                 {
                     return false;
                 }
             }
             return true;
+
         }
         public void updatepic_right()
         {
@@ -109,7 +123,7 @@ namespace clib.BL
         }
         public void moveleft(List<Floor> list)
         {
-            if (check_hurdles_left(list))
+            if (check_borders_left() && check_hurdles_left(list))
             {
                 direction = false;
                 pb.Left -= walking_speed;
@@ -159,7 +173,7 @@ namespace clib.BL
                 pb.Image = clib.Properties.Resource1.LS;
             }
         }
-        public bool Jump()
+        public bool Jump(List<Floor> list)
         {
             jump_count++;
             if (jump_count == 6)
@@ -214,8 +228,31 @@ namespace clib.BL
                     return false;
                 }
             }
-            pb.Top -= jump_steps;
+            if (jump_check(list))
+            {
+                pb.Top -= jump_steps;
+            }
             return true;
+        }
+        public bool jump_check(List<Floor> list)
+        {
+            gameobject a = new gameobject(pb.Top - 50, pb.Left, 30, 100);
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (chk(a.Pb, list[i].Pb))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        public bool chk(PictureBox obj, PictureBox surface)
+        {
+            if (obj.Bounds.IntersectsWith(surface.Bounds))
+            {
+                return true;
+            }
+            return false;
         }
         public void gravity(List<Floor> list)
         {
@@ -235,27 +272,90 @@ namespace clib.BL
             }
             return false;
         }
-        public bool location(PictureBox obj,PictureBox surface)
+        public bool location(PictureBox obj, PictureBox surface)
         {
-            //pb.Bottom > list[i].Pb.Top && ((pb.Left < list[i].Pb.Left && pb.Left > list[i].Pb.Right) || pb.Right > list[i].Pb.Left && pb.Right < list[i].Pb.Right)
-            if(obj.Bottom>surface.Top)
+            if (!bound_right(obj, surface) && !bound_left(obj, surface) && !bound_down(obj, surface))
             {
-                if(direction)
+                return false;
+            }
+            return true;
+        }
+        public bool bound_left(PictureBox obj, PictureBox surface)
+        {
+            if (obj.Left > surface.Right)
+            {
+                return true;
+            }
+            return false;
+        }
+        public bool bound_right(PictureBox obj, PictureBox surface)
+        {
+            if (obj.Right < surface.Left)
+            {
+                return true;
+            }
+            return false;
+        }
+        public bool bound_down(PictureBox obj, PictureBox surface)
+        {
+            if (obj.Bottom < surface.Top)
+            {
+                return true;
+            }
+            return false;
+        }
+        public bool bound_up(PictureBox obj, PictureBox surface)
+        {
+            if (obj.Top > surface.Bottom)
+            {
+                return true;
+            }
+            return false;
+        }
+        public void fire()
+        {
+            PictureBox p = new PictureBox();
+            p.SizeMode = PictureBoxSizeMode.StretchImage;
+            p.BackColor = Color.Transparent;
+            p.Size = new Size(50, 50);
+            if (direction)
+            {
+                p.Image = clib.Properties.Resource1.fireright;
+                p.Image.Tag = "right";
+                p.Left = pb.Right;
+                p.Top = pb.Top + pb.Height / 2 - 40;
+            }
+            else
+            {
+                p.Image = clib.Properties.Resource1.fireleft;
+                p.Image.Tag = "left";
+                p.Left = pb.Left - p.Width;
+                p.Top = pb.Top + pb.Height / 2 - 40;
+            }
+            fires.Add(p);
+            onAdd?.Invoke(p, EventArgs.Empty);
+        }
+        public void movefires(List<Floor> list)
+        {
+            for (int i = 0; i < fires.Count; i++)
+            {
+                if (fires[i].Image.Tag.ToString()=="left")
                 {
-                    if(obj.Right<surface.Left+25)
-                    {
-                        return true;
-                    }
+                    movefireleft(fires[i],list);
                 }
                 else
                 {
-                    if (obj.Left+25 > surface.Right)
-                    {
-                        return true;
-                    }
+                    movefireright(fires[i],list);
                 }
             }
-            return false;
+        }
+        public void movefireleft(PictureBox f, List<Floor> list)
+        {
+            f.Left -= 40;
+        }
+        public void movefireright(PictureBox f, List<Floor> list)
+        {
+            f.Left += 40;
         }
     }
 }

@@ -166,5 +166,11 @@
   <ItemGroup>
     <None Include="Resources\Floor.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\fireright.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\fireleft.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

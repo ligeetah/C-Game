@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Resources;
-using clib.game;
 using clib.BL;
 using clib.DL;
 using EZInput;
@@ -32,14 +31,14 @@ namespace Game
             objects.onAdd += new EventHandler(OnAdd);
             floors.onAdd += new EventHandler(OnAdd);
             P = new player(this.Height, this.Width, 20, 30, 20);
+            P.onAdd+=new EventHandler(OnAdd);
             floors.add_list(this.Width,30,this.Height-20,0,P.Pd);
             floors.add_list(700, 30, this.Height-100, 0, P.Pd);
-            floors.add_list(700, 30, this.Height - 300, 0, P.Pd);
-            floors.add_list(700, 30, this.Height - 500, 0, P.Pd);
-
-            floors.add_list(700, 30, this.Height - 100-200, 900, P.Pd);
+            floors.add_list(100, 30, this.Height - 330, 0, P.Pd);
+            floors.add_list(150, 30, this.Height - 500, 0, P.Pd);
+            floors.add_list(700, 30, this.Height - 350, 900, P.Pd);
             floors.add_list(700, 30, this.Height - 100, 900, P.Pd);
-
+            floors.add_list(700, 30, this.Height - 150, 900, P.Pd);
 
             //objects.add_list(Properties.Resources.ufoGreen, "up", P.Pd.Top, 60);
             this.Controls.Add(P.Pd);
@@ -51,7 +50,7 @@ namespace Game
             key_pressed = false;
             if(Keyboard.IsKeyPressed(Key.RightArrow))
             {
-                P.moveright(this.Height,this.Width,floors.Floors);
+                P.moveright(this.Width,floors.Floors);
                 key_pressed = true;
             }
             else if(Keyboard.IsKeyPressed(Key.LeftArrow))
@@ -69,8 +68,12 @@ namespace Game
             }
             if(jump)
             {
-                jump = P.Jump();
+                jump = P.Jump(floors.Floors);
                 key_pressed = true;
+            }
+            if(Keyboard.IsKeyPressed(Key.W))
+            {
+                P.fire();
             }
             if(!key_pressed)
             {
@@ -84,6 +87,11 @@ namespace Game
             {
                 this.Close();
             }
+
+
+
+
+            P.movefires(floors.Floors);
         }
 
         public void OnAdd(object sender, EventArgs e)

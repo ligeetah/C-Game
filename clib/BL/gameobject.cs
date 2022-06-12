@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
-namespace clib.game
+namespace clib.BL
 {
     public class gameobject
     {
@@ -15,6 +15,14 @@ namespace clib.game
         public PictureBox Pb { get { return pb; } set { pb = value; } }
         public string Movement { get { return movement; } set { movement = value; } }
 
+        public gameobject(int top,int left,int h,int w)
+        {
+            pb = new PictureBox();
+            pb.Height = h;
+            pb.Width = w;
+            pb.Top = top;
+            pb.Left = left;
+        }
         public gameobject(Image p,string m,int top,int left)
         {
             pb = new PictureBox();

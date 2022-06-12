@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
-namespace clib.game
+namespace clib.BL
 {
     public class gameobjectDL
     {
